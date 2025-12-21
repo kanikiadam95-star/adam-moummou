@@ -2,63 +2,75 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>موقعي الأول</title>
+    <title>MADARA ADAM</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
             direction: rtl;
-        }
-        header {
-            background-color: #1e90ff;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        section {
-            padding: 20px;
-        }
-        footer {
-            background-color: #333;
+            background: #111;
             color: white;
             text-align: center;
+            margin: 0;
+        }
+        .box {
+            margin-top: 150px;
+        }
+        input {
             padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+            width: 200px;
+            border-radius: 5px;
+            border: none;
         }
         button {
             padding: 10px 20px;
-            background-color: #1e90ff;
-            color: white;
+            margin-top: 10px;
             border: none;
             border-radius: 5px;
+            background: crimson;
+            color: white;
             cursor: pointer;
         }
         button:hover {
-            background-color: #0b5ed7;
+            background: darkred;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>مرحبا بكم في موقعي</h1>
-    <p>هاد أول موقع إلكتروني ديالي</p>
-</header>
+<!-- واجهة الدخول -->
+<div id="login" class="box">
+    <h2>تسجيل الدخول</h2>
+    <input type="text" id="username" placeholder="اكتب اسمك">
+    <br>
+    <button onclick="login()">دخول</button>
+</div>
 
-<section>
-    <h2>عني</h2>
-    <p>أنا كنحب البرمجة وبغيت نتعلم تصميم المواقع.</p>
+<!-- واجهة الموقع -->
+<div id="site" class="box hidden">
+    <h1>MADARA</h1>
+    <h1>ADAM!!</h1>
 
-    <button onclick="alert('مرحبا بك!')">اضغط هنا</button>
-</section>
+    <p>مرحبا <span id="user"></span> 👋</p>
 
-<footer>
-    <p>© 2025 - موقعي</p>
-</footer>
+    <p>حسابي على إنستغرام:</p>
+    <h3>@madara_00s</h3>
+</div>
+
+<script>
+    function login() {
+        var name = document.getElementById("username").value;
+        if (name !== "") {
+            document.getElementById("login").classList.add("hidden");
+            document.getElementById("site").classList.remove("hidden");
+            document.getElementById("user").innerText = name;
+        } else {
+            alert("دخل اسمك");
+        }
+    }
+</script>
 
 </body>
 </html>
