@@ -16,45 +16,32 @@
         text-align: center;
     }
 
-    /* الخلفية الموجية */
-    .wave {
-        position: absolute;
-        width: 200%;
-        height: 200%;
-        top: -50%;
-        left: -50%;
-        background: repeating-linear-gradient(
-            0deg,
-            rgba(255,255,255,0.05),
-            rgba(255,255,255,0.05) 2px,
-            transparent 2px,
-            transparent 20px
-        );
-        animation: waveMove 10s linear infinite;
+    /* Canvas للنجوم */
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1;
     }
 
-    @keyframes waveMove {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .container {
+    .container, #gallery {
         position: relative;
         z-index: 10;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 100%;
         padding: 20px;
     }
 
     h1 {
-        font-size: 5vw; /* أكبر للنصوص */
+        font-size: 5vw;
         margin: 10px 0;
+        color: #fff;
+        text-shadow: 0 0 5px #fff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
     }
 
     h2 {
         font-size: 3vw;
         margin: 20px 0;
+        color: #fff;
+        text-shadow: 0 0 5px #fff, 0 0 10px #0ff, 0 0 20px #0ff;
     }
 
     button {
@@ -74,32 +61,103 @@
         box-shadow: 0 0 20px white;
     }
 
-    /* متجاوب مع الهاتف */
+    #gallery {
+        display: none;
+    }
+
+    #gallery img {
+        width: 30%;
+        margin: 10px;
+        border-radius: 10px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    #gallery img:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #0ff;
+    }
+
     @media (max-width: 768px) {
         h1 { font-size: 10vw; }
         h2 { font-size: 6vw; }
         button { font-size: 4vw; padding: 12px 25px; }
+        #gallery img { width: 80%; }
     }
 </style>
 </head>
 <body>
 
-<!-- الخلفية الموجية -->
-<div class="wave"></div>
+<canvas id="starfield"></canvas>
 
-<!-- واجهة الموقع -->
+<!-- الواجهة الأولى -->
 <div class="container" id="site">
     <h1>MADARA</h1>
     <h1>ADAM!!</h1>
     <h2>Welcome!</h2>
     <p>Instagram: <a href="https://www.instagram.com/madara_00s" target="_blank" style="color:white;">@madara_00s</a></p>
-    <button onclick="enterSite()">Enter</button>
+    <button onclick="enterGallery()">Enter</button>
+</div>
+
+<!-- الواجهة الثانية (صور) -->
+<div class="container" id="gallery">
+    <h1>Gallery</h1>
+    <div>
+        <img src="https://via.placeholder.com/300x200?text=Photo+1" alt="Photo1">
+        <img src="https://via.placeholder.com/300x200?text=Photo+2" alt="Photo2">
+        <img src="https://via.placeholder.com/300x200?text=Photo+3" alt="Photo3">
+    </div>
 </div>
 
 <script>
-function enterSite() {
-    alert("Welcome to the site!"); // يمكن تحذفها أو تغيرها لشي حاجة أخرى
+// زر الدخول
+function enterGallery() {
+    document.getElementById('site').style.display = 'none';
+    document.getElementById('gallery').style.display = 'block';
 }
+
+// خلفية النجوم
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
+
+const stars = [];
+const numStars = 200;
+
+for(let i = 0; i < numStars; i++){
+    stars.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        z: Math.random() * width
+    });
+}
+
+function animate() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,width,height);
+    ctx.fillStyle = "white";
+    for(let i = 0; i < numStars; i++){
+        let star = stars[i];
+        star.z -= 2;
+        if(star.z <= 0){
+            star.z = width;
+            star.x = Math.random() * width;
+            star.y = Math.random() * height;
+        }
+        let sx = (star.x - width/2) * (width / star.z) + width/2;
+        let sy = (star.y - height/2) * (width / star.z) + height/2;
+        let size = width / star.z;
+        ctx.fillRect(sx, sy, size, size);
+    }
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+});
 </script>
 
 </body>
