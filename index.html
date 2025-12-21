@@ -1,75 +1,105 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>MADARA ADAM</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            direction: rtl;
-            background: #111;
-            color: white;
-            text-align: center;
-            margin: 0;
-        }
-        .box {
-            margin-top: 150px;
-        }
-        input {
-            padding: 10px;
-            width: 200px;
-            border-radius: 5px;
-            border: none;
-        }
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            background: crimson;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background: darkred;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MADARA ADAM</title>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+        background: black;
+        color: white;
+        text-align: center;
+    }
+
+    /* الخلفية الموجية */
+    .wave {
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.05),
+            rgba(255,255,255,0.05) 2px,
+            transparent 2px,
+            transparent 20px
+        );
+        animation: waveMove 10s linear infinite;
+    }
+
+    @keyframes waveMove {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .container {
+        position: relative;
+        z-index: 10;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 5vw; /* أكبر للنصوص */
+        margin: 10px 0;
+    }
+
+    h2 {
+        font-size: 3vw;
+        margin: 20px 0;
+    }
+
+    button {
+        padding: 15px 40px;
+        font-size: 2vw;
+        border: 2px solid white;
+        border-radius: 8px;
+        background: transparent;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: white;
+        color: black;
+        box-shadow: 0 0 20px white;
+    }
+
+    /* متجاوب مع الهاتف */
+    @media (max-width: 768px) {
+        h1 { font-size: 10vw; }
+        h2 { font-size: 6vw; }
+        button { font-size: 4vw; padding: 12px 25px; }
+    }
+</style>
 </head>
 <body>
 
-<!-- واجهة الدخول -->
-<div id="login" class="box">
-    <h2>تسجيل الدخول</h2>
-    <input type="text" id="username" placeholder="اكتب اسمك">
-    <br>
-    <button onclick="login()">دخول</button>
-</div>
+<!-- الخلفية الموجية -->
+<div class="wave"></div>
 
 <!-- واجهة الموقع -->
-<div id="site" class="box hidden">
+<div class="container" id="site">
     <h1>MADARA</h1>
     <h1>ADAM!!</h1>
-
-    <p>مرحبا <span id="user"></span> 👋</p>
-
-    <p>حسابي على إنستغرام:</p>
-    <h3>@madara_00s</h3>
+    <h2>Welcome!</h2>
+    <p>Instagram: <a href="https://www.instagram.com/madara_00s" target="_blank" style="color:white;">@madara_00s</a></p>
+    <button onclick="enterSite()">Enter</button>
 </div>
 
 <script>
-    function login() {
-        var name = document.getElementById("username").value;
-        if (name !== "") {
-            document.getElementById("login").classList.add("hidden");
-            document.getElementById("site").classList.remove("hidden");
-            document.getElementById("user").innerText = name;
-        } else {
-            alert("دخل اسمك");
-        }
-    }
+function enterSite() {
+    alert("Welcome to the site!"); // يمكن تحذفها أو تغيرها لشي حاجة أخرى
+}
 </script>
 
 </body>
