@@ -37,6 +37,7 @@ body {
 h1 {
     font-size: 3em;
     margin-top: 40px;
+    text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
 }
 
 input {
@@ -56,14 +57,15 @@ button {
     border: none;
     font-size: 1.1em;
     cursor: pointer;
-    background: #ffdd00;
-    color: #333;
+    color: #fff;
+    background: #ff00ff;
+    box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
     transition: 0.3s;
 }
 
 button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px #ffdd00;
+    transform: scale(1.15);
+    box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff, 0 0 60px #ff00ff;
 }
 
 .gallery {
@@ -76,11 +78,29 @@ button:hover {
 .gallery img {
     width: 100%;
     border-radius: 15px;
-    transition: 0.3s;
+    transition: 0.3s, box-shadow 0.3s;
 }
 
 .gallery img:hover {
     transform: scale(1.1);
+    box-shadow: 0 0 15px #00ffff, 0 0 30px #ff00ff;
+}
+
+#welcome h1 {
+    animation: slideGlow 1s ease;
+    text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+}
+
+#time {
+    margin-top: 20px;
+    font-size: 1.5em;
+    color: #ffff00;
+    text-shadow: 0 0 5px #ffff00, 0 0 10px #ff00ff;
+}
+
+@keyframes slideGlow {
+    from {opacity:0; transform:translateY(-50px);}
+    to {opacity:1; transform:translateY(0);}
 }
 
 @media(max-width:600px) {
@@ -111,12 +131,15 @@ button:hover {
     <h1>WELCOME</h1>
     <p id="user"></p>
 
+    <div id="time"></div>
+
     <button onclick="showGallery()">Gallery</button>
+    <button onclick="showGame()">Play Game</button>
     <button onclick="toggleMusic()">Music</button>
     <button onclick="goHome()">رجوع</button>
 </div>
 
-<!-- الصفحة الثالثة -->
+<!-- الصفحة الثالثة – Gallery -->
 <div class="page" id="gallery">
     <h1>Gallery</h1>
 
@@ -130,7 +153,27 @@ button:hover {
     <button onclick="goWelcome()">رجوع</button>
 </div>
 
+<!-- الصفحة الرابعة – Click Game -->
+<div class="page" id="game">
+    <h1>Click Game</h1>
+    <p>Score: <span id="score">0</span></p>
+    <button onclick="increaseScore()">Click me!</button>
+    <br>
+    <button onclick="goWelcome()">رجوع</button>
+</div>
+
 <script>
+// الوقت الحالي
+function updateTime() {
+    let now = new Date();
+    let h = now.getHours().toString().padStart(2,'0');
+    let m = now.getMinutes().toString().padStart(2,'0');
+    let s = now.getSeconds().toString().padStart(2,'0');
+    document.getElementById("time").innerText = `Time: ${h}:${m}:${s}`;
+}
+setInterval(updateTime, 1000);
+
+// الصفحة الأولى → Welcome
 function enterSite() {
     let n = document.getElementById("name").value;
     if(n===""){alert("Enter your name"); return;}
@@ -139,25 +182,43 @@ function enterSite() {
     document.getElementById("user").innerText = "Hello " + n + " 👋";
 }
 
+// زر الرجوع للواجهة الرئيسية
 function goHome(){
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     document.getElementById("home").classList.add("active");
 }
 
+// Gallery
 function showGallery(){
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     document.getElementById("gallery").classList.add("active");
 }
 
+// Game
+let score=0;
+function showGame(){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("game").classList.add("active");
+    score=0;
+    document.getElementById("score").innerText = score;
+}
+function increaseScore(){
+    score++;
+    document.getElementById("score").innerText = score;
+}
+
+// رجوع من Gallery / Game → Welcome
 function goWelcome(){
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     document.getElementById("welcome").classList.add("active");
 }
 
+// Instagram
 function openIG(){
     window.open("https://www.instagram.com/madara_00s","_blank");
 }
 
+// Music toggle
 let playing=false;
 function toggleMusic(){
     let m=document.getElementById("music");
