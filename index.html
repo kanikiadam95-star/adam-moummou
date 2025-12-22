@@ -2,105 +2,40 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>ADAM MOUMMOU Dino Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADAM MOUMMOU - Dino Game</title>
 
 <style>
 body {
-    margin: 0;
+    margin:0;
     font-family: Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #0b0c10, #1f2833);
-    color: white;
-    text-align: center;
+    background: linear-gradient(135deg,#0b0c10,#1f2833);
+    color:white;
+    text-align:center;
 }
 
-.page {
-    display: none;
-}
+.page{display:none;}
+.page.active{display:block;}
 
-.page.active {
-    display: block;
+h1{font-size:2.5em;margin-top:20px;text-shadow:0 0 10px #00ffff,0 0 20px #ff00ff;}
+button{
+    margin:10px;
+    padding:10px 25px;
+    border:none;border-radius:25px;
+    font-size:1.2em;cursor:pointer;
+    background:#00ffff;color:#111;
+    box-shadow:0 0 10px #00ffff,0 0 20px #ff00ff;
+    transition:0.3s;
 }
+button:hover{transform:scale(1.1);box-shadow:0 0 20px #00ffff,0 0 40px #ff00ff;}
 
-h1 {
-    font-size: 3em;
-    text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
+#gameCanvas{
+    background:#111;
+    display:block;
+    margin:20px auto;
+    border:3px solid #00ffff;
 }
-
-button {
-    margin-top: 20px;
-    padding: 12px 30px;
-    border: none;
-    border-radius: 25px;
-    font-size: 1.2em;
-    cursor: pointer;
-    background: #00ffff;
-    color: #111;
-    box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
-    transition: 0.3s;
-}
-
-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff;
-}
-
-/* Dino Game */
-#game {
-    position: relative;
-    width: 400px;
-    height: 200px;
-    border-bottom: 3px solid #00ffff;
-    overflow: hidden;
-    margin: auto;
-    background: #111;
-}
-
-#dino {
-    position: absolute;
-    bottom: 0;
-    left: 20px;
-    width: 50px;
-    height: 50px;
-    background-image: url('https://i.imgur.com/9b8HdYt.png'); /* ديناصور صورة */
-    background-size: cover;
-}
-
-.jump {
-    animation: jump 0.5s linear;
-}
-
-@keyframes jump {
-    0% { bottom: 0; }
-    50% { bottom: 80px; }
-    100% { bottom: 0; }
-}
-
-#cactus {
-    position: absolute;
-    bottom: 0;
-    right: -30px;
-    width: 30px;
-    height: 50px;
-    background: green;
-    animation: cactus 1.5s infinite linear;
-}
-
-@keyframes cactus {
-    0% { right: -30px; }
-    100% { right: 430px; }
-}
-
-#score {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 18px;
-}
+#score{font-size:18px;}
 </style>
 </head>
 <body>
@@ -113,12 +48,9 @@ button:hover {
 
 <!-- صفحة اللعبة -->
 <div class="page" id="gamePage">
-    <h1>Dino Game</h1>
+    <h1>Dino Game (Easy)</h1>
     <div id="score">Score: 0</div>
-    <div id="game">
-        <div id="dino"></div>
-        <div id="cactus"></div>
-    </div>
+    <canvas id="gameCanvas" width="600" height="200"></canvas>
     <audio id="jumpSound">
         <source src="https://www.soundjay.com/button/sounds/button-16.mp3" type="audio/mpeg">
     </audio>
@@ -127,66 +59,91 @@ button:hover {
 </div>
 
 <script>
-// الانتقال من home → game
+// الانتقال بين الصفحات
 function startGame(){
     document.getElementById("home").classList.remove("active");
     document.getElementById("gamePage").classList.add("active");
-    initGame();
+    initDinoGame();
 }
-
-// العودة للواجهة الرئيسية
 function goHome(){
     document.getElementById("gamePage").classList.remove("active");
     document.getElementById("home").classList.add("active");
-    clearInterval(gameInterval);
-    score = 0;
-    document.getElementById("score").innerText = "Score: 0";
-    cactus.style.right = '-30px';
+    cancelAnimationFrame(gameLoopId);
 }
 
-// ===== Dino Game =====
-const dino = document.getElementById("dino");
-const cactus = document.getElementById("cactus");
+// ===== Dino Game Easy =====
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 const jumpSound = document.getElementById("jumpSound");
-let score = 0;
-let gameInterval;
+
+let dino, obstacles, score, gravity, gameLoopId;
+
+function initDinoGame(){
+    dino = {x:50,y:150,width:40,height:40,vy:0,jumping:false};
+    obstacles = [];
+    score = 0;
+    gravity = 1;
+    spawnObstacle();
+    gameLoop();
+}
 
 // القفز
 function jump(){
-    if(!dino.classList.contains("jump")){
-        dino.classList.add("jump");
+    if(!dino.jumping){
+        dino.vy = -15;
+        dino.jumping = true;
         jumpSound.play();
-        setTimeout(()=>dino.classList.remove("jump"), 500);
     }
 }
-
-// التحكم
-document.addEventListener("keydown", jump);
+document.addEventListener("keydown", e=>{if(e.key==" "||e.key=="ArrowUp") jump();});
 document.addEventListener("touchstart", jump);
 
-// تحديث اللعبة
-function initGame(){
-    cactus.style.right = '-30px';
-    score = 0;
-    document.getElementById("score").innerText = "Score: 0";
+// spawn cactus
+function spawnObstacle(){
+    obstacles.push({x:canvas.width,y:150,width:20,height:40});
+}
 
-    gameInterval = setInterval(()=>{
-        // حركة الكاكتوس
-        let cactusRight = parseInt(window.getComputedStyle(cactus).getPropertyValue("right"));
-        cactus.style.right = (cactusRight + 5) + "px";
-        if(cactusRight > 430){
-            cactus.style.right = '-30px';
-            score++;
-            document.getElementById("score").innerText = "Score: " + score;
-        }
-
-        // الاصطدام
-        let dinoBottom = parseInt(window.getComputedStyle(dino).getPropertyValue("bottom"));
-        if(cactusRight > 20 && cactusRight < 70 && dinoBottom < 50){
-            alert("Game Over 😢\nScore: " + score);
+// game loop
+function gameLoop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    
+    // dinosaur
+    dino.vy += gravity;
+    dino.y += dino.vy;
+    if(dino.y>150){ dino.y=150; dino.vy=0; dino.jumping=false; }
+    ctx.fillStyle="#00ffff";
+    ctx.fillRect(dino.x,dino.y,dino.width,dino.height);
+    
+    // obstacles
+    for(let i=0;i<obstacles.length;i++){
+        obstacles[i].x -=5;
+        ctx.fillStyle="#ff00ff";
+        ctx.fillRect(obstacles[i].x,obstacles[i].y,obstacles[i].width,obstacles[i].height);
+        
+        // collision
+        if(dino.x<obstacles[i].x+obstacles[i].width &&
+           dino.x+dino.width>obstacles[i].x &&
+           dino.y<obstacles[i].y+obstacles[i].height &&
+           dino.y+dino.height>obstacles[i].y){
+            alert("Game Over 😢\nScore: "+score);
             goHome();
+            return;
         }
-    }, 30);
+    }
+    
+    // spawn new obstacle
+    if(obstacles[obstacles.length-1].x<canvas.width-200){
+        spawnObstacle();
+    }
+    
+    // remove offscreen
+    if(obstacles[0].x+obstacles[0].width<0){
+        obstacles.shift();
+        score++;
+        document.getElementById("score").innerText="Score: "+score;
+    }
+    
+    gameLoopId = requestAnimationFrame(gameLoop);
 }
 </script>
 
