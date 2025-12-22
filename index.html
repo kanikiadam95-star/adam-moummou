@@ -5,49 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ADAM MOUMMOU</title>
 
-<!-- أيقونات -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    height: 100vh;
-    overflow: hidden;
-    background: linear-gradient(270deg, #6a11cb, #2575fc, #00c6ff);
+    min-height: 100vh;
+    background: linear-gradient(270deg, #7f00ff, #00c6ff, #00ff99);
     background-size: 600% 600%;
-    animation: bgMove 10s ease infinite;
+    animation: bg 12s ease infinite;
     color: white;
     text-align: center;
 }
 
-@keyframes bgMove {
+@keyframes bg {
     0% {background-position: 0% 50%;}
     50% {background-position: 100% 50%;}
     100% {background-position: 0% 50%;}
 }
 
-.container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
+.page {
+    display: none;
+    padding: 30px;
+}
+
+.page.active {
+    display: block;
 }
 
 h1 {
     font-size: 3em;
-}
-
-p {
-    font-size: 1.2em;
+    margin-top: 40px;
 }
 
 input {
     padding: 12px;
     width: 250px;
-    border: none;
     border-radius: 25px;
+    border: none;
     outline: none;
     text-align: center;
     font-size: 1em;
@@ -56,13 +52,13 @@ input {
 button {
     margin: 10px;
     padding: 12px 30px;
-    font-size: 1.1em;
-    border: none;
     border-radius: 25px;
+    border: none;
+    font-size: 1.1em;
     cursor: pointer;
     background: #ffdd00;
     color: #333;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: 0.3s;
 }
 
 button:hover {
@@ -70,92 +66,103 @@ button:hover {
     box-shadow: 0 0 20px #ffdd00;
 }
 
-/* الصفحة الثانية */
-#page2 {
-    display: none;
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 30px;
 }
 
-#welcome {
-    font-size: 3.5em;
-    margin-top: 40px;
-    animation: slideDown 1s ease;
+.gallery img {
+    width: 100%;
+    border-radius: 15px;
+    transition: 0.3s;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.gallery img:hover {
+    transform: scale(1.1);
 }
 
-@media (max-width: 600px) {
-    h1 { font-size: 2.2em; }
-    #welcome { font-size: 2.5em; }
+@media(max-width:600px) {
+    h1 {font-size: 2.2em;}
 }
 </style>
 </head>
 
 <body>
 
-<!-- صوت -->
-<audio id="clickSound">
-  <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
+<audio id="music" loop>
+<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
 </audio>
 
 <!-- الصفحة الأولى -->
-<div class="container" id="page1">
+<div class="page active" id="home">
     <h1>ADAM MOUMMOU</h1>
     <p><i class="fa-brands fa-instagram"></i> @madara_00s</p>
 
-    <input type="text" id="username" placeholder="Enter your name">
-    <br>
+    <input type="text" id="name" placeholder="Enter your name"><br>
 
-    <button onclick="enterSite(); playSound()">
-        <i class="fa-solid fa-right-to-bracket"></i> دخول
-    </button>
-
-    <button onclick="openInstagram(); playSound()">
-        <i class="fa-brands fa-instagram"></i> Instagram
-    </button>
+    <button onclick="enterSite()">دخول</button>
+    <button onclick="openIG()">Instagram</button>
 </div>
 
 <!-- الصفحة الثانية -->
-<div class="container" id="page2">
-    <div id="welcome">WELCOME</div>
-    <p id="userText"></p>
+<div class="page" id="welcome">
+    <h1>WELCOME</h1>
+    <p id="user"></p>
 
-    <button onclick="goBack(); playSound()">
-        <i class="fa-solid fa-arrow-left"></i> رجوع
-    </button>
+    <button onclick="showGallery()">Gallery</button>
+    <button onclick="toggleMusic()">Music</button>
+    <button onclick="goHome()">رجوع</button>
+</div>
+
+<!-- الصفحة الثالثة -->
+<div class="page" id="gallery">
+    <h1>Gallery</h1>
+
+    <div class="gallery">
+        <img src="https://via.placeholder.com/300x200?text=Free+Fire">
+        <img src="https://via.placeholder.com/300x200?text=Gaming">
+        <img src="https://via.placeholder.com/300x200?text=ADAM">
+        <img src="https://via.placeholder.com/300x200?text=MADARA">
+    </div>
+
+    <button onclick="goWelcome()">رجوع</button>
 </div>
 
 <script>
-function playSound() {
-    document.getElementById("clickSound").play();
-}
-
 function enterSite() {
-    var name = document.getElementById("username").value;
-    if(name === "") {
-        alert("Please enter your name");
-        return;
-    }
-    document.getElementById("page1").style.display = "none";
-    document.getElementById("page2").style.display = "block";
-    document.getElementById("userText").innerText = "Hello " + name + " 👋";
+    let n = document.getElementById("name").value;
+    if(n===""){alert("Enter your name"); return;}
+    document.getElementById("home").classList.remove("active");
+    document.getElementById("welcome").classList.add("active");
+    document.getElementById("user").innerText = "Hello " + n + " 👋";
 }
 
-function goBack() {
-    document.getElementById("page2").style.display = "none";
-    document.getElementById("page1").style.display = "block";
+function goHome(){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("home").classList.add("active");
 }
 
-function openInstagram() {
-    window.open("https://www.instagram.com/madara_00s", "_blank");
+function showGallery(){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("gallery").classList.add("active");
+}
+
+function goWelcome(){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("welcome").classList.add("active");
+}
+
+function openIG(){
+    window.open("https://www.instagram.com/madara_00s","_blank");
+}
+
+let playing=false;
+function toggleMusic(){
+    let m=document.getElementById("music");
+    if(!playing){m.play(); playing=true;}
+    else{m.pause(); playing=false;}
 }
 </script>
 
