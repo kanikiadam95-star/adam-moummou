@@ -27,7 +27,7 @@ body {
 
 .page {
     display: none;
-    padding: 30px;
+    padding: 20px;
 }
 
 .page.active {
@@ -88,7 +88,6 @@ button:hover {
 
 #welcome h1 {
     animation: slideGlow 1s ease;
-    text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
 }
 
 #time {
@@ -98,6 +97,15 @@ button:hover {
     text-shadow: 0 0 5px #ffff00, 0 0 10px #ff00ff;
 }
 
+/* Snake Game */
+#snakeCanvas {
+    background: #111;
+    border: 2px solid #ff00ff;
+    display: block;
+    margin: 20px auto;
+}
+
+/* Neon text animation */
 @keyframes slideGlow {
     from {opacity:0; transform:translateY(-50px);}
     to {opacity:1; transform:translateY(0);}
@@ -108,7 +116,6 @@ button:hover {
 }
 </style>
 </head>
-
 <body>
 
 <audio id="music" loop>
@@ -126,15 +133,15 @@ button:hover {
     <button onclick="openIG()">Instagram</button>
 </div>
 
-<!-- الصفحة الثانية -->
+<!-- الصفحة الثانية – Welcome -->
 <div class="page" id="welcome">
     <h1>WELCOME</h1>
     <p id="user"></p>
-
     <div id="time"></div>
 
     <button onclick="showGallery()">Gallery</button>
-    <button onclick="showGame()">Play Game</button>
+    <button onclick="showGame()">Play Click Game</button>
+    <button onclick="showSnake()">Play Snake Game</button>
     <button onclick="toggleMusic()">Music</button>
     <button onclick="goHome()">رجوع</button>
 </div>
@@ -142,14 +149,12 @@ button:hover {
 <!-- الصفحة الثالثة – Gallery -->
 <div class="page" id="gallery">
     <h1>Gallery</h1>
-
     <div class="gallery">
         <img src="https://via.placeholder.com/300x200?text=Free+Fire">
         <img src="https://via.placeholder.com/300x200?text=Gaming">
         <img src="https://via.placeholder.com/300x200?text=ADAM">
         <img src="https://via.placeholder.com/300x200?text=MADARA">
     </div>
-
     <button onclick="goWelcome()">رجوع</button>
 </div>
 
@@ -162,8 +167,16 @@ button:hover {
     <button onclick="goWelcome()">رجوع</button>
 </div>
 
+<!-- الصفحة الخامسة – Snake Game -->
+<div class="page" id="snakeGame">
+    <h1>Snake Game</h1>
+    <canvas id="snakeCanvas" width="400" height="400"></canvas>
+    <p>Score: <span id="snakeScore">0</span></p>
+    <button onclick="goWelcome()">رجوع</button>
+</div>
+
 <script>
-// الوقت الحالي
+// الوقت
 function updateTime() {
     let now = new Date();
     let h = now.getHours().toString().padStart(2,'0');
@@ -171,7 +184,7 @@ function updateTime() {
     let s = now.getSeconds().toString().padStart(2,'0');
     document.getElementById("time").innerText = `Time: ${h}:${m}:${s}`;
 }
-setInterval(updateTime, 1000);
+setInterval(updateTime,1000);
 
 // الصفحة الأولى → Welcome
 function enterSite() {
@@ -194,7 +207,7 @@ function showGallery(){
     document.getElementById("gallery").classList.add("active");
 }
 
-// Game
+// Click Game
 let score=0;
 function showGame(){
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
@@ -207,10 +220,11 @@ function increaseScore(){
     document.getElementById("score").innerText = score;
 }
 
-// رجوع من Gallery / Game → Welcome
-function goWelcome(){
+// Snake Game
+function showSnake(){
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-    document.getElementById("welcome").classList.add("active");
+    document.getElementById("snakeGame").classList.add("active");
+    initSnake();
 }
 
 // Instagram
@@ -224,6 +238,78 @@ function toggleMusic(){
     let m=document.getElementById("music");
     if(!playing){m.play(); playing=true;}
     else{m.pause(); playing=false;}
+}
+
+// رجوع للواجهة Welcome
+function goWelcome(){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("welcome").classList.add("active");
+}
+
+// ===== Snake Game Code =====
+let canvas, ctx;
+let snake, food, direction, snakeInterval, snakeScore;
+function initSnake(){
+    canvas=document.getElementById("snakeCanvas");
+    ctx=canvas.getContext("2d");
+    snake=[{x:10,y:10}];
+    direction="RIGHT";
+    snakeScore=0;
+    document.getElementById("snakeScore").innerText=snakeScore;
+    if(snakeInterval) clearInterval(snakeInterval);
+    placeFood();
+    snakeInterval=setInterval(updateSnake,100);
+}
+
+function placeFood(){
+    food={x:Math.floor(Math.random()*20), y:Math.floor(Math.random()*20)};
+}
+
+document.addEventListener("keydown",function(e){
+    if(e.key=="ArrowUp" && direction!="DOWN") direction="UP";
+    if(e.key=="ArrowDown" && direction!="UP") direction="DOWN";
+    if(e.key=="ArrowLeft" && direction!="RIGHT") direction="LEFT";
+    if(e.key=="ArrowRight" && direction!="LEFT") direction="RIGHT";
+});
+
+function updateSnake(){
+    let head={x:snake[0].x, y:snake[0].y};
+    if(direction=="UP") head.y--;
+    if(direction=="DOWN") head.y++;
+    if(direction=="LEFT") head.x--;
+    if(direction=="RIGHT") head.x++;
+
+    // Wall collision
+    if(head.x<0 || head.x>=20 || head.y<0 || head.y>=20 || snake.some(s=>s.x==head.x && s.y==head.y)){
+        clearInterval(snakeInterval);
+        alert("Game Over! Score: "+snakeScore);
+        return;
+    }
+
+    snake.unshift(head);
+
+    if(head.x==food.x && head.y==food.y){
+        snakeScore++;
+        document.getElementById("snakeScore").innerText=snakeScore;
+        placeFood();
+    } else {
+        snake.pop();
+    }
+
+    drawSnake();
+}
+
+function drawSnake(){
+    ctx.fillStyle="#111";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // draw food
+    ctx.fillStyle="#ff00ff";
+    ctx.fillRect(food.x*20, food.y*20,20,20);
+
+    // draw snake
+    ctx.fillStyle="#00ffff";
+    snake.forEach(s=>ctx.fillRect(s.x*20,s.y*20,20,20));
 }
 </script>
 
