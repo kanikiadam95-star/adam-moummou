@@ -2,80 +2,161 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Madara Chat</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADAM MOUMMOU</title>
+
+<!-- أيقونات -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
 body {
-    background: #111;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(270deg, #6a11cb, #2575fc, #00c6ff);
+    background-size: 600% 600%;
+    animation: bgMove 10s ease infinite;
     color: white;
-    font-family: Arial;
     text-align: center;
 }
-#chat {
+
+@keyframes bgMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 90%;
-    max-width: 500px;
-    margin: auto;
 }
-#messages {
-    border: 1px solid #555;
-    height: 300px;
-    overflow-y: auto;
-    padding: 10px;
-    margin-bottom: 10px;
+
+h1 {
+    font-size: 3em;
 }
-input, button {
-    padding: 10px;
-    width: 100%;
-    margin: 5px 0;
+
+p {
+    font-size: 1.2em;
 }
-button {
-    background: crimson;
-    color: white;
+
+input {
+    padding: 12px;
+    width: 250px;
     border: none;
+    border-radius: 25px;
+    outline: none;
+    text-align: center;
+    font-size: 1em;
 }
-</style>
-</head>
-<body>
 
-<h1>MADARA CHAT</h1>
+button {
+    margin: 10px;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    background: #ffdd00;
+    color: #333;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
 
-<div id="chat">
-    <input id="name" placeholder="Your name">
-    <div id="messages"></div>
-    <input id="message" placeholder="Type message...">
-    <button onclick="sendMessage()">Send</button>
-</div>
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #ffdd00;
+}
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+/* الصفحة الثانية */
+#page2 {
+    display: none;
+}
 
-<script>
-var firebaseConfig = {
-    apiKey: "PUT_YOUR_API_KEY",
-    authDomain: "PROJECT.firebaseapp.com",
-    databaseURL: "https://PROJECT.firebaseio.com",
-    projectId: "PROJECT",
-};
-firebase.initializeApp(firebaseConfig);
+#welcome {
+    font-size: 3.5em;
+    margin-top: 40px;
+    animation: slideDown 1s ease;
+}
 
-var db = firebase.database().ref("messages");
-
-function sendMessage() {
-    var name = document.getElementById("name").value;
-    var msg = document.getElementById("message").value;
-    if(name && msg){
-        db.push({ name: name, message: msg });
-        document.getElementById("message").value = "";
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-db.on("child_added", function(snapshot) {
-    var data = snapshot.val();
-    var div = document.createElement("div");
-    div.innerHTML = "<b>" + data.name + ":</b> " + data.message;
-    document.getElementById("messages").appendChild(div);
-});
+@media (max-width: 600px) {
+    h1 { font-size: 2.2em; }
+    #welcome { font-size: 2.5em; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- صوت -->
+<audio id="clickSound">
+  <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
+</audio>
+
+<!-- الصفحة الأولى -->
+<div class="container" id="page1">
+    <h1>ADAM MOUMMOU</h1>
+    <p><i class="fa-brands fa-instagram"></i> @madara_00s</p>
+
+    <input type="text" id="username" placeholder="Enter your name">
+    <br>
+
+    <button onclick="enterSite(); playSound()">
+        <i class="fa-solid fa-right-to-bracket"></i> دخول
+    </button>
+
+    <button onclick="openInstagram(); playSound()">
+        <i class="fa-brands fa-instagram"></i> Instagram
+    </button>
+</div>
+
+<!-- الصفحة الثانية -->
+<div class="container" id="page2">
+    <div id="welcome">WELCOME</div>
+    <p id="userText"></p>
+
+    <button onclick="goBack(); playSound()">
+        <i class="fa-solid fa-arrow-left"></i> رجوع
+    </button>
+</div>
+
+<script>
+function playSound() {
+    document.getElementById("clickSound").play();
+}
+
+function enterSite() {
+    var name = document.getElementById("username").value;
+    if(name === "") {
+        alert("Please enter your name");
+        return;
+    }
+    document.getElementById("page1").style.display = "none";
+    document.getElementById("page2").style.display = "block";
+    document.getElementById("userText").innerText = "Hello " + name + " 👋";
+}
+
+function goBack() {
+    document.getElementById("page2").style.display = "none";
+    document.getElementById("page1").style.display = "block";
+}
+
+function openInstagram() {
+    window.open("https://www.instagram.com/madara_00s", "_blank");
+}
 </script>
 
 </body>
