@@ -2,161 +2,79 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Madara Chat</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MADARA ADAM</title>
 <style>
-    body, html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        font-family: Arial, sans-serif;
-        overflow: hidden;
-        background: black;
-        color: white;
-        text-align: center;
-    }
-
-    /* Canvas للنجوم */
-    canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1;
-    }
-
-    .container, #gallery {
-        position: relative;
-        z-index: 10;
-        padding: 20px;
-    }
-
-    h1 {
-        font-size: 5vw;
-        margin: 10px 0;
-        color: #fff;
-        text-shadow: 0 0 5px #fff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
-    }
-
-    h2 {
-        font-size: 3vw;
-        margin: 20px 0;
-        color: #fff;
-        text-shadow: 0 0 5px #fff, 0 0 10px #0ff, 0 0 20px #0ff;
-    }
-
-    button {
-        padding: 15px 40px;
-        font-size: 2vw;
-        border: 2px solid white;
-        border-radius: 8px;
-        background: transparent;
-        color: white;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: white;
-        color: black;
-        box-shadow: 0 0 20px white;
-    }
-
-    #gallery {
-        display: none;
-    }
-
-    #gallery img {
-        width: 30%;
-        margin: 10px;
-        border-radius: 10px;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    #gallery img:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 20px #0ff;
-    }
-
-    @media (max-width: 768px) {
-        h1 { font-size: 10vw; }
-        h2 { font-size: 6vw; }
-        button { font-size: 4vw; padding: 12px 25px; }
-        #gallery img { width: 80%; }
-    }
+body {
+    background: #111;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+}
+#chat {
+    width: 90%;
+    max-width: 500px;
+    margin: auto;
+}
+#messages {
+    border: 1px solid #555;
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+input, button {
+    padding: 10px;
+    width: 100%;
+    margin: 5px 0;
+}
+button {
+    background: crimson;
+    color: white;
+    border: none;
+}
 </style>
 </head>
 <body>
 
-<canvas id="starfield"></canvas>
+<h1>MADARA CHAT</h1>
 
-<!-- الواجهة الأولى -->
-<div class="container" id="site">
-    <h1>MADARA</h1>
-    <h1>ADAM!!</h1>
-    <h2>Welcome!</h2>
-    <p>Instagram: <a href="https://www.instagram.com/madara_00s" target="_blank" style="color:white;">@madara_00s</a></p>
-    <button onclick="enterGallery()">Enter</button>
+<div id="chat">
+    <input id="name" placeholder="Your name">
+    <div id="messages"></div>
+    <input id="message" placeholder="Type message...">
+    <button onclick="sendMessage()">Send</button>
 </div>
 
-<!-- الواجهة الثانية (صور) -->
-<div class="container" id="gallery">
-    <h1>Gallery</h1>
-    <div>
-        <img src="https://via.placeholder.com/300x200?text=Photo+1" alt="Photo1">
-        <img src="https://via.placeholder.com/300x200?text=Photo+2" alt="Photo2">
-        <img src="https://via.placeholder.com/300x200?text=Photo+3" alt="Photo3">
-    </div>
-</div>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-// زر الدخول
-function enterGallery() {
-    document.getElementById('site').style.display = 'none';
-    document.getElementById('gallery').style.display = 'block';
-}
+var firebaseConfig = {
+    apiKey: "PUT_YOUR_API_KEY",
+    authDomain: "PROJECT.firebaseapp.com",
+    databaseURL: "https://PROJECT.firebaseio.com",
+    projectId: "PROJECT",
+};
+firebase.initializeApp(firebaseConfig);
 
-// خلفية النجوم
-const canvas = document.getElementById('starfield');
-const ctx = canvas.getContext('2d');
-let width = canvas.width = window.innerWidth;
-let height = canvas.height = window.innerHeight;
+var db = firebase.database().ref("messages");
 
-const stars = [];
-const numStars = 200;
-
-for(let i = 0; i < numStars; i++){
-    stars.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        z: Math.random() * width
-    });
-}
-
-function animate() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(0,0,width,height);
-    ctx.fillStyle = "white";
-    for(let i = 0; i < numStars; i++){
-        let star = stars[i];
-        star.z -= 2;
-        if(star.z <= 0){
-            star.z = width;
-            star.x = Math.random() * width;
-            star.y = Math.random() * height;
-        }
-        let sx = (star.x - width/2) * (width / star.z) + width/2;
-        let sy = (star.y - height/2) * (width / star.z) + height/2;
-        let size = width / star.z;
-        ctx.fillRect(sx, sy, size, size);
+function sendMessage() {
+    var name = document.getElementById("name").value;
+    var msg = document.getElementById("message").value;
+    if(name && msg){
+        db.push({ name: name, message: msg });
+        document.getElementById("message").value = "";
     }
-    requestAnimationFrame(animate);
 }
 
-animate();
-
-window.addEventListener('resize', () => {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
+db.on("child_added", function(snapshot) {
+    var data = snapshot.val();
+    var div = document.createElement("div");
+    div.innerHTML = "<b>" + data.name + ":</b> " + data.message;
+    document.getElementById("messages").appendChild(div);
 });
 </script>
 
