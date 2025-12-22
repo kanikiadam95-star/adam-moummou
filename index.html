@@ -2,32 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>ADAM MOUMMOU Dino Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADAM MOUMMOU</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    min-height: 100vh;
-    background: linear-gradient(270deg, #7f00ff, #00c6ff, #00ff99);
-    background-size: 600% 600%;
-    animation: bg 12s ease infinite;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0b0c10, #1f2833);
     color: white;
     text-align: center;
 }
 
-@keyframes bg {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
-}
-
 .page {
     display: none;
-    padding: 20px;
 }
 
 .page.active {
@@ -36,280 +28,165 @@ body {
 
 h1 {
     font-size: 3em;
-    margin-top: 40px;
-    text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
-}
-
-input {
-    padding: 12px;
-    width: 250px;
-    border-radius: 25px;
-    border: none;
-    outline: none;
-    text-align: center;
-    font-size: 1em;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
 }
 
 button {
-    margin: 10px;
+    margin-top: 20px;
     padding: 12px 30px;
-    border-radius: 25px;
     border: none;
-    font-size: 1.1em;
+    border-radius: 25px;
+    font-size: 1.2em;
     cursor: pointer;
-    color: #fff;
-    background: #ff00ff;
-    box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+    background: #00ffff;
+    color: #111;
+    box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
     transition: 0.3s;
 }
 
 button:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff, 0 0 60px #ff00ff;
-}
-
-.gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.gallery img {
-    width: 100%;
-    border-radius: 15px;
-    transition: 0.3s, box-shadow 0.3s;
-}
-
-.gallery img:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 15px #00ffff, 0 0 30px #ff00ff;
+    box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff;
 }
 
-#welcome h1 {
-    animation: slideGlow 1s ease;
-}
-
-#time {
-    margin-top: 20px;
-    font-size: 1.5em;
-    color: #ffff00;
-    text-shadow: 0 0 5px #ffff00, 0 0 10px #ff00ff;
-}
-
-/* Snake Game */
-#snakeCanvas {
+/* Dino Game */
+#game {
+    position: relative;
+    width: 400px;
+    height: 200px;
+    border-bottom: 3px solid #00ffff;
+    overflow: hidden;
+    margin: auto;
     background: #111;
-    border: 2px solid #ff00ff;
-    display: block;
-    margin: 20px auto;
 }
 
-/* Neon text animation */
-@keyframes slideGlow {
-    from {opacity:0; transform:translateY(-50px);}
-    to {opacity:1; transform:translateY(0);}
+#dino {
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    background-image: url('https://i.imgur.com/9b8HdYt.png'); /* ديناصور صورة */
+    background-size: cover;
 }
 
-@media(max-width:600px) {
-    h1 {font-size: 2.2em;}
+.jump {
+    animation: jump 0.5s linear;
+}
+
+@keyframes jump {
+    0% { bottom: 0; }
+    50% { bottom: 80px; }
+    100% { bottom: 0; }
+}
+
+#cactus {
+    position: absolute;
+    bottom: 0;
+    right: -30px;
+    width: 30px;
+    height: 50px;
+    background: green;
+    animation: cactus 1.5s infinite linear;
+}
+
+@keyframes cactus {
+    0% { right: -30px; }
+    100% { right: 430px; }
+}
+
+#score {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
 }
 </style>
 </head>
 <body>
 
-<audio id="music" loop>
-<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
-</audio>
-
 <!-- الصفحة الأولى -->
 <div class="page active" id="home">
     <h1>ADAM MOUMMOU</h1>
-    <p><i class="fa-brands fa-instagram"></i> @madara_00s</p>
-
-    <input type="text" id="name" placeholder="Enter your name"><br>
-
-    <button onclick="enterSite()">دخول</button>
-    <button onclick="openIG()">Instagram</button>
+    <button onclick="startGame()">Play Dino Game</button>
 </div>
 
-<!-- الصفحة الثانية – Welcome -->
-<div class="page" id="welcome">
-    <h1>WELCOME</h1>
-    <p id="user"></p>
-    <div id="time"></div>
-
-    <button onclick="showGallery()">Gallery</button>
-    <button onclick="showGame()">Play Click Game</button>
-    <button onclick="showSnake()">Play Snake Game</button>
-    <button onclick="toggleMusic()">Music</button>
-    <button onclick="goHome()">رجوع</button>
-</div>
-
-<!-- الصفحة الثالثة – Gallery -->
-<div class="page" id="gallery">
-    <h1>Gallery</h1>
-    <div class="gallery">
-        <img src="https://via.placeholder.com/300x200?text=Free+Fire">
-        <img src="https://via.placeholder.com/300x200?text=Gaming">
-        <img src="https://via.placeholder.com/300x200?text=ADAM">
-        <img src="https://via.placeholder.com/300x200?text=MADARA">
+<!-- صفحة اللعبة -->
+<div class="page" id="gamePage">
+    <h1>Dino Game</h1>
+    <div id="score">Score: 0</div>
+    <div id="game">
+        <div id="dino"></div>
+        <div id="cactus"></div>
     </div>
-    <button onclick="goWelcome()">رجوع</button>
-</div>
-
-<!-- الصفحة الرابعة – Click Game -->
-<div class="page" id="game">
-    <h1>Click Game</h1>
-    <p>Score: <span id="score">0</span></p>
-    <button onclick="increaseScore()">Click me!</button>
+    <audio id="jumpSound">
+        <source src="https://www.soundjay.com/button/sounds/button-16.mp3" type="audio/mpeg">
+    </audio>
     <br>
-    <button onclick="goWelcome()">رجوع</button>
-</div>
-
-<!-- الصفحة الخامسة – Snake Game -->
-<div class="page" id="snakeGame">
-    <h1>Snake Game</h1>
-    <canvas id="snakeCanvas" width="400" height="400"></canvas>
-    <p>Score: <span id="snakeScore">0</span></p>
-    <button onclick="goWelcome()">رجوع</button>
+    <button onclick="goHome()">Back</button>
 </div>
 
 <script>
-// الوقت
-function updateTime() {
-    let now = new Date();
-    let h = now.getHours().toString().padStart(2,'0');
-    let m = now.getMinutes().toString().padStart(2,'0');
-    let s = now.getSeconds().toString().padStart(2,'0');
-    document.getElementById("time").innerText = `Time: ${h}:${m}:${s}`;
-}
-setInterval(updateTime,1000);
-
-// الصفحة الأولى → Welcome
-function enterSite() {
-    let n = document.getElementById("name").value;
-    if(n===""){alert("Enter your name"); return;}
+// الانتقال من home → game
+function startGame(){
     document.getElementById("home").classList.remove("active");
-    document.getElementById("welcome").classList.add("active");
-    document.getElementById("user").innerText = "Hello " + n + " 👋";
+    document.getElementById("gamePage").classList.add("active");
+    initGame();
 }
 
-// زر الرجوع للواجهة الرئيسية
+// العودة للواجهة الرئيسية
 function goHome(){
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("gamePage").classList.remove("active");
     document.getElementById("home").classList.add("active");
+    clearInterval(gameInterval);
+    score = 0;
+    document.getElementById("score").innerText = "Score: 0";
+    cactus.style.right = '-30px';
 }
 
-// Gallery
-function showGallery(){
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-    document.getElementById("gallery").classList.add("active");
-}
+// ===== Dino Game =====
+const dino = document.getElementById("dino");
+const cactus = document.getElementById("cactus");
+const jumpSound = document.getElementById("jumpSound");
+let score = 0;
+let gameInterval;
 
-// Click Game
-let score=0;
-function showGame(){
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-    document.getElementById("game").classList.add("active");
-    score=0;
-    document.getElementById("score").innerText = score;
-}
-function increaseScore(){
-    score++;
-    document.getElementById("score").innerText = score;
-}
-
-// Snake Game
-function showSnake(){
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-    document.getElementById("snakeGame").classList.add("active");
-    initSnake();
-}
-
-// Instagram
-function openIG(){
-    window.open("https://www.instagram.com/madara_00s","_blank");
-}
-
-// Music toggle
-let playing=false;
-function toggleMusic(){
-    let m=document.getElementById("music");
-    if(!playing){m.play(); playing=true;}
-    else{m.pause(); playing=false;}
-}
-
-// رجوع للواجهة Welcome
-function goWelcome(){
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-    document.getElementById("welcome").classList.add("active");
-}
-
-// ===== Snake Game Code =====
-let canvas, ctx;
-let snake, food, direction, snakeInterval, snakeScore;
-function initSnake(){
-    canvas=document.getElementById("snakeCanvas");
-    ctx=canvas.getContext("2d");
-    snake=[{x:10,y:10}];
-    direction="RIGHT";
-    snakeScore=0;
-    document.getElementById("snakeScore").innerText=snakeScore;
-    if(snakeInterval) clearInterval(snakeInterval);
-    placeFood();
-    snakeInterval=setInterval(updateSnake,100);
-}
-
-function placeFood(){
-    food={x:Math.floor(Math.random()*20), y:Math.floor(Math.random()*20)};
-}
-
-document.addEventListener("keydown",function(e){
-    if(e.key=="ArrowUp" && direction!="DOWN") direction="UP";
-    if(e.key=="ArrowDown" && direction!="UP") direction="DOWN";
-    if(e.key=="ArrowLeft" && direction!="RIGHT") direction="LEFT";
-    if(e.key=="ArrowRight" && direction!="LEFT") direction="RIGHT";
-});
-
-function updateSnake(){
-    let head={x:snake[0].x, y:snake[0].y};
-    if(direction=="UP") head.y--;
-    if(direction=="DOWN") head.y++;
-    if(direction=="LEFT") head.x--;
-    if(direction=="RIGHT") head.x++;
-
-    // Wall collision
-    if(head.x<0 || head.x>=20 || head.y<0 || head.y>=20 || snake.some(s=>s.x==head.x && s.y==head.y)){
-        clearInterval(snakeInterval);
-        alert("Game Over! Score: "+snakeScore);
-        return;
+// القفز
+function jump(){
+    if(!dino.classList.contains("jump")){
+        dino.classList.add("jump");
+        jumpSound.play();
+        setTimeout(()=>dino.classList.remove("jump"), 500);
     }
-
-    snake.unshift(head);
-
-    if(head.x==food.x && head.y==food.y){
-        snakeScore++;
-        document.getElementById("snakeScore").innerText=snakeScore;
-        placeFood();
-    } else {
-        snake.pop();
-    }
-
-    drawSnake();
 }
 
-function drawSnake(){
-    ctx.fillStyle="#111";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+// التحكم
+document.addEventListener("keydown", jump);
+document.addEventListener("touchstart", jump);
 
-    // draw food
-    ctx.fillStyle="#ff00ff";
-    ctx.fillRect(food.x*20, food.y*20,20,20);
+// تحديث اللعبة
+function initGame(){
+    cactus.style.right = '-30px';
+    score = 0;
+    document.getElementById("score").innerText = "Score: 0";
 
-    // draw snake
-    ctx.fillStyle="#00ffff";
-    snake.forEach(s=>ctx.fillRect(s.x*20,s.y*20,20,20));
+    gameInterval = setInterval(()=>{
+        // حركة الكاكتوس
+        let cactusRight = parseInt(window.getComputedStyle(cactus).getPropertyValue("right"));
+        cactus.style.right = (cactusRight + 5) + "px";
+        if(cactusRight > 430){
+            cactus.style.right = '-30px';
+            score++;
+            document.getElementById("score").innerText = "Score: " + score;
+        }
+
+        // الاصطدام
+        let dinoBottom = parseInt(window.getComputedStyle(dino).getPropertyValue("bottom"));
+        if(cactusRight > 20 && cactusRight < 70 && dinoBottom < 50){
+            alert("Game Over 😢\nScore: " + score);
+            goHome();
+        }
+    }, 30);
 }
 </script>
 
